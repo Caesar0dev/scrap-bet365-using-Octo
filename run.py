@@ -42,11 +42,23 @@ def execute_code():
     num = [0, 0, 0, 0, 0, 0]
     n = 0
     date_num = 0
-    write_data = []
+    write_result = []
+    result_league_names = []
+    result_match_rounds = []
+    result_match_dates = []
+    result_match_times = []
+    result_home_team_names = []
+    result_away_team_names = []
+    result_home_team_odds = []
+    result_away_team_odds = []
+    result_home_team_Asian_Handicap_odds = []
+    result_away_team_Asian_Handicap_odds = []
+    result_home_team_Lines = []
+    result_away_team_Lines = []
 
     league_name = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[4]/div[2]/div/div/div[2]/div[1]/div/div/div[1]/div/div[2]/div[1]/div/span').text
     match_round = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[4]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/div/div/div[2]/div[1]/div[1]/div/span').text
-
+    # print(league_name)
     header = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[4]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/div/div/div[2]/div[2]/div/div[1]')
 
     all_childrens = header.find_elements(By.XPATH, './div')
@@ -95,32 +107,49 @@ def execute_code():
         elif (l % 3 ==1) :
             away_team_Line.append(scores[l].text)
 
-    today = date.today()
-    today_time = datetime.now()
-    with open('Bet365_result.csv', 'a+', encoding='UTF8', newline='') as f:
-        writer = csv.writer(f)
+    now_time = str(pd.datetime.now().year) + str(pd.datetime.now().month) + str(pd.datetime.now().day) + str(pd.datetime.now().hour) + str(pd.datetime.now().minute) + str(pd.datetime.now().second)
+    result_file_name = now_time + ".csv"
+    print(">>>>>", result_file_name)
+    print(type(result_file_name))
+    for j in range(0, len(num)):
+        
+        for i in range(0, num[j]):
 
-        for j in range(0, len(num)):
-                
-            for i in range(0, num[j]):
+            result_league_names.append(league_name)
+            result_match_rounds.append(match_round)
+            result_match_dates.append(match_dates[j])
+            result_match_times.append(match_time[date_num + i])
+            result_home_team_names.append(home_team_name[date_num + i])
+            result_away_team_names.append(away_team_name[date_num + i])
+            result_home_team_odds.append(home_team_odds[date_num + i])
+            result_away_team_odds.append(away_team_odds[date_num + i])
+            result_home_team_Asian_Handicap_odds.append(home_team_Asian_Handicap_odds[date_num + i])
+            result_away_team_Asian_Handicap_odds.append(away_team_Asian_Handicap_odds[date_num + i])
+            result_home_team_Lines.append(home_team_Line[date_num + i])
+            result_away_team_Lines.append(away_team_Line[date_num + i])
 
-                write_data.append(str(today))
-                write_data.append(str(today_time))
-                write_data.append(league_name)
-                write_data.append(match_round)
-                write_data.append(match_dates[j])
-                write_data.append(match_time[date_num + i])
-                write_data.append(home_team_name[date_num + i])
-                write_data.append(away_team_name[date_num + i])
-                write_data.append(home_team_odds[date_num + i])
-                write_data.append(away_team_odds[date_num + i])
-                write_data.append(home_team_Asian_Handicap_odds[date_num + i])
-                write_data.append(away_team_Asian_Handicap_odds[date_num + i])
-                write_data.append(home_team_Line[date_num + i])
-                write_data.append(away_team_Line[date_num + i])
-                
-                writer.writerow(write_data)
-                write_data = []
+            write_data = {}
+
+            write_data["League Name"] = league_name
+            write_data["Match Round"] = match_round
+            write_data["Match Date"] = match_dates[j]
+            write_data["Match Time"] = match_time[date_num + i]
+            write_data["Home Team Name"] = home_team_name[date_num + i]
+            write_data["Away Team Name"] = away_team_name[date_num + i]
+            write_data["Home Team Odds"] = home_team_odds[date_num + i]
+            write_data["Away Team Odds"] = away_team_odds[date_num + i]
+            write_data["Home Team Asian Handicap Odds"] = home_team_Asian_Handicap_odds[date_num + i]
+            write_data["Away Team Asian Handicap Odds"] = away_team_Asian_Handicap_odds[date_num + i]
+            write_data["Home Team Line"] = home_team_Line[date_num + i]
+            write_data["Away Team Line"] = away_team_Line[date_num + i]
+
+            write_result.append(write_data)
+
+            dict = {'League Name': result_league_names, 'Match Round': result_match_rounds, 'Match Date': result_match_dates, 'Match Time': result_match_times, 'Home Team Name': result_home_team_names, 'Away Team Name': result_away_team_names, 'Home Team Odds': result_home_team_odds, 'Away Team Odds': result_away_team_odds, 'Home Team Asian Handicap Odds': result_home_team_Asian_Handicap_odds, 'Away Team Asian Handicap Odds': result_away_team_Asian_Handicap_odds, 'Home Team Line': result_home_team_Lines, 'Away Team Line': result_away_team_Lines}
+            df = pd.DataFrame(dict)
+            df.to_csv(result_file_name)
+
+        date_num = date_num + num[j]
 
     driver.close()
     
